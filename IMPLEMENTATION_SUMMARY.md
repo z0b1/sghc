@@ -34,7 +34,7 @@
 - **Framework**: Next.js 16.2.9 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4 with custom Hack Club theme
-- **Database**: Firebase Firestore (configured, ready to integrate)
+- **Database**: Neon Postgres (configured, ready to integrate)
 - **Authentication**: Custom JWT implementation
 - **Deployment**: Vercel-ready
 - **Icons**: Heroicons + Hack Club Icons
@@ -137,7 +137,7 @@ Replace mock data in pages:
 - [x] Deployment-ready
 
 ### 📋 Phase 2 (Ready to Implement)
-- [ ] Connect to real Firebase database
+- [ ] Connect to real Neon Postgres database
 - [ ] Event registration forms
 - [ ] Member signup functionality
 - [ ] Live leaderboard updates

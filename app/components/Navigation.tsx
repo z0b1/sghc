@@ -16,7 +16,6 @@ export default function Navigation() {
 
   return (
     <nav
-      style={{ backgroundColor: HackClubBrand.colors.darkBackground }}
       className="border-b"
       style={{
         backgroundColor: HackClubBrand.colors.darkBackground,

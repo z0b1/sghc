@@ -10,6 +10,7 @@ const SECRET_KEY = new TextEncoder().encode(
 );
 
 export interface AdminPayload {
+  [key: string]: unknown;
   adminId: string;
   email: string;
 }

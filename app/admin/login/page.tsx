@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
                   backgroundColor: HackClubBrand.colors.background,
                   borderColor: HackClubBrand.colors.border,
                   color: HackClubBrand.colors.text,
-                  focusRingColor: HackClubBrand.colors.red,
+                  outlineColor: HackClubBrand.colors.red,
                 }}
               />
             </div>
