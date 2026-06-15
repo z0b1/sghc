@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "./db";
+import { revalidatePath } from "next/cache";
 
 // -- MEMBERS --
 export async function getMembers() {
@@ -13,10 +14,12 @@ export async function addMember(member: { name: string; role: string; bio: strin
     INSERT INTO members (name, role, bio, grade) 
     VALUES (${member.name}, ${member.role}, ${member.bio}, ${member.grade || null})
   `;
+  revalidatePath('/members');
 }
 
 export async function removeMember(id: string) {
   await sql`DELETE FROM members WHERE id = ${id}`;
+  revalidatePath('/members');
 }
 
 // -- EVENTS --
@@ -30,10 +33,12 @@ export async function addEvent(event: { title: string; description: string; date
     INSERT INTO events (title, description, date, time, location)
     VALUES (${event.title}, ${event.description}, ${event.date}, ${event.time}, ${event.location})
   `;
+  revalidatePath('/events');
 }
 
 export async function removeEvent(id: string) {
   await sql`DELETE FROM events WHERE id = ${id}`;
+  revalidatePath('/events');
 }
 
 // -- PROJECTS --
@@ -52,10 +57,12 @@ export async function addProject(project: { title: string; description: string; 
     INSERT INTO projects (title, description, tech_stack, repo_url)
     VALUES (${project.title}, ${project.description}, ${project.tech_stack}, ${project.repo_url || null})
   `;
+  revalidatePath('/projects');
 }
 
 export async function removeProject(id: string) {
   await sql`DELETE FROM projects WHERE id = ${id}`;
+  revalidatePath('/projects');
 }
 
 // -- LEADERBOARD --
