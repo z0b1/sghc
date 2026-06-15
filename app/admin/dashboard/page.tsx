@@ -172,38 +172,54 @@ export default function AdminDashboard() {
                 <div className="mb-6 p-6 rounded-lg border" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated }}>
                   <h3 className="text-xl font-bold mb-4" style={{ color: HackClubBrand.colors.text }}>Add New Member</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      className="p-2 border rounded"
-                      style={{ borderColor: HackClubBrand.colors.border }}
-                      value={newMember.name || ''}
-                      onChange={e => setNewMember({...newMember, name: e.target.value})}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Role (e.g. Member)"
-                      className="p-2 border rounded"
-                      style={{ borderColor: HackClubBrand.colors.border }}
-                      value={newMember.role || ''}
-                      onChange={e => setNewMember({...newMember, role: e.target.value})}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Grade (optional)"
-                      className="p-2 border rounded"
-                      style={{ borderColor: HackClubBrand.colors.border }}
-                      value={newMember.grade || ''}
-                      onChange={e => setNewMember({...newMember, grade: e.target.value})}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Bio"
-                      className="p-2 border rounded md:col-span-2"
-                      style={{ borderColor: HackClubBrand.colors.border }}
-                      value={newMember.bio || ''}
-                      onChange={e => setNewMember({...newMember, bio: e.target.value})}
-                    />
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        className="p-2 border rounded"
+                        style={{
+                          borderColor: HackClubBrand.colors.border,
+                          backgroundColor: HackClubBrand.colors.elevated,
+                          color: HackClubBrand.colors.text,
+                        }}
+                        value={newMember.name || ''}
+                        onChange={e => setNewMember({ ...newMember, name: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Role (e.g. Member)"
+                        className="p-2 border rounded"
+                        style={{
+                          borderColor: HackClubBrand.colors.border,
+                          backgroundColor: HackClubBrand.colors.elevated,
+                          color: HackClubBrand.colors.text,
+                        }}
+                        value={newMember.role || ''}
+                        onChange={e => setNewMember({ ...newMember, role: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Grade (optional)"
+                        className="p-2 border rounded"
+                        style={{
+                          borderColor: HackClubBrand.colors.border,
+                          backgroundColor: HackClubBrand.colors.elevated,
+                          color: HackClubBrand.colors.text,
+                        }}
+                        value={newMember.grade || ''}
+                        onChange={e => setNewMember({ ...newMember, grade: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Bio"
+                        className="p-2 border rounded md:col-span-2"
+                        style={{
+                          borderColor: HackClubBrand.colors.border,
+                          backgroundColor: HackClubBrand.colors.elevated,
+                          color: HackClubBrand.colors.text,
+                        }}
+                        value={newMember.bio || ''}
+                        onChange={e => setNewMember({ ...newMember, bio: e.target.value })}
+                      />
                   </div>
                   <button
                     onClick={handleAddMember}
