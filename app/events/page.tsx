@@ -9,8 +9,12 @@ interface Event {
   name: string;
   date: string;
   time: string;
-  description: string;
   location: string;
+  description: string;
+  registrationLimit: number;
+  registered: number;
+}
+
 export default async function EventsPage() {
   const dbEvents = await getEvents();
   const mockEvents: Event[] = dbEvents.map(e => ({
