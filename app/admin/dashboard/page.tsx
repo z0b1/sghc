@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navigation from '../../components/Navigation';
+
 import { HackClubBrand } from '../../config/branding';
+import { getMembers, addMember, removeMember } from '../../lib/actions';
 
 type TabType = 'events' | 'members' | 'projects' | 'leaderboard';
 
@@ -15,19 +16,12 @@ interface Member {
   grade?: string;
 }
 
-const initialMembers: Member[] = [
-  { id: '1', name: 'Alex Chen', role: 'Club President', bio: 'Full-stack developer. Loves building cool projects.', grade: '12' },
-  { id: '2', name: 'Sam Rodriguez', role: 'Vice President', bio: 'AI/ML enthusiast. Competitive programmer.', grade: '11' },
-  { id: '3', name: 'Jordan Taylor', role: 'Events Lead', bio: 'Organized the Spring Hackathon.', grade: '12' },
-  { id: '4', name: 'Casey Williams', role: 'Treasurer', bio: 'Manages sponsorships and budget.', grade: '11' },
-];
-
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   
-  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const [members, setMembers] = useState<Member[]>([]);
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMember, setNewMember] = useState<Partial<Member>>({});
 
@@ -41,24 +35,36 @@ export default function AdminDashboard() {
       return;
     }
     setAuthorized(true);
-    setLoading(false);
+
+    // Fetch live data
+    getMembers().then(data => {
+      setMembers(data as Member[]);
+      setLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
   }, [router]);
 
-  const handleAddMember = () => {
+  const handleAddMember = async () => {
     if (!newMember.name || !newMember.role || !newMember.bio) return;
-    const member: Member = {
-      id: Math.random().toString(36).substring(7),
+    
+    await addMember({
       name: newMember.name,
       role: newMember.role,
       bio: newMember.bio,
       grade: newMember.grade,
-    };
-    setMembers([...members, member]);
+    });
+    
+    // Refresh members list
+    const updated = await getMembers();
+    setMembers(updated as Member[]);
     setNewMember({});
     setShowAddMember(false);
   };
 
-  const handleRemoveMember = (id: string) => {
+  const handleRemoveMember = async (id: string) => {
+    await removeMember(id);
     setMembers(members.filter(m => m.id !== id));
   };
 
@@ -84,7 +90,7 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <Navigation />
+
       <main style={{ backgroundColor: HackClubBrand.colors.background }}>
         {/* Dashboard Header */}
         <section

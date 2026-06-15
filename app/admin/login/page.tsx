@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navigation from '../../components/Navigation';
+
 import { HackClubBrand } from '../../config/branding';
 
 export default function AdminLoginPage() {
@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
 
   return (
     <>
-      <Navigation />
+
       <main
         style={{
           backgroundColor: HackClubBrand.colors.background,

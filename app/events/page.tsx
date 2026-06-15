@@ -1,7 +1,8 @@
-import Navigation from '../components/Navigation';
 import Link from 'next/link';
-import { HackClubBrand } from '../config/branding';
 import Icon from '@hackclub/icons';
+import { HackClubBrand } from '../config/branding';
+
+import { getEvents } from '../lib/actions';
 
 interface Event {
   id: string;
@@ -10,48 +11,21 @@ interface Event {
   time: string;
   description: string;
   location: string;
-  registrationLimit: number;
-  registered: number;
-}
-
-// Mock events data - in production, fetch from Firestore
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    name: 'Spring Hackathon 2026',
-    date: 'March 15, 2026',
-    time: '9:00 AM - 5:00 PM',
-    description: 'A 8-hour hackathon where you build amazing projects and compete for prizes.',
-    location: 'School Auditorium',
-    registrationLimit: 50,
-    registered: 32,
-  },
-  {
-    id: '2',
-    name: 'Web Dev Workshop',
-    date: 'March 22, 2026',
-    time: '3:30 PM - 5:00 PM',
-    description: 'Learn the basics of modern web development with React and Next.js.',
-    location: 'Computer Lab Room 101',
-    registrationLimit: 30,
-    registered: 18,
-  },
-  {
-    id: '3',
-    name: 'AI/ML Talk & Demo',
-    date: 'April 5, 2026',
-    time: '4:00 PM - 5:30 PM',
-    description: 'Guest speaker from tech industry talks about AI and shows live demos.',
-    location: 'Main Cafeteria',
-    registrationLimit: 100,
-    registered: 42,
-  },
-];
-
-export default function EventsPage() {
+export default async function EventsPage() {
+  const dbEvents = await getEvents();
+  const mockEvents: Event[] = dbEvents.map(e => ({
+    id: e.id,
+    name: e.title,
+    date: new Date(e.date).toLocaleDateString(),
+    time: e.time,
+    description: e.description,
+    location: e.location,
+    registrationLimit: e.registration_limit,
+    registered: e.registered_count
+  }));
   return (
     <>
-      <Navigation />
+
       <main style={{ backgroundColor: HackClubBrand.colors.background }}>
         {/* Header */}
         <section
@@ -147,12 +121,13 @@ export default function EventsPage() {
                       </div>
                     </div>
 
-                    <button
-                      className="w-full py-2 rounded-full font-bold text-white transition"
+                    <Link
+                      href="/events/register"
+                      className="block text-center w-full py-2 rounded-full font-bold text-white transition hover:opacity-80"
                       style={{ backgroundColor: HackClubBrand.colors.red }}
                     >
                       Register
-                    </button>
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -160,16 +135,7 @@ export default function EventsPage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer
-          style={{
-            backgroundColor: HackClubBrand.colors.text,
-            color: 'white',
-          }}
-          className="py-8 px-4 text-center"
-        >
-          <p>© 2026 Hack Club</p>
-        </footer>
+
       </main>
     </>
   );

@@ -1,5 +1,6 @@
-import Navigation from '../components/Navigation';
+
 import { HackClubBrand } from '../config/branding';
+import { getProjects } from '../lib/actions';
 
 interface Project {
   id: string;
@@ -10,62 +11,19 @@ interface Project {
   link?: string;
 }
 
-// Mock projects data - in production, fetch from Firestore
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Study Buddy',
-    description: 'AI-powered study companion that helps students prepare for exams.',
-    members: ['Alex Chen', 'Morgan Lee'],
-    technologies: ['React', 'OpenAI API', 'Tailwind CSS'],
-    link: 'https://github.com',
-  },
-  {
-    id: '2',
-    title: 'Campus Map App',
-    description: 'Interactive mobile app to navigate the school campus and find classrooms.',
-    members: ['Sam Rodriguez', 'Avery Brown'],
-    technologies: ['React Native', 'Google Maps API', 'TypeScript'],
-    link: 'https://github.com',
-  },
-  {
-    id: '3',
-    title: 'Code Share Platform',
-    description: 'Real-time collaborative code editor for pair programming.',
-    members: ['Jordan Taylor', 'Riley Johnson', 'Casey Williams'],
-    technologies: ['Next.js', 'Socket.io', 'MongoDB', 'Monaco Editor'],
-    link: 'https://github.com',
-  },
-  {
-    id: '4',
-    title: 'Game: Pixel Adventure',
-    description: 'Fun 2D platformer game built from scratch.',
-    members: ['Taylor Kim'],
-    technologies: ['Phaser.js', 'JavaScript', 'Canvas API'],
-    link: 'https://github.com',
-  },
-  {
-    id: '5',
-    title: 'Finance Tracker',
-    description: 'Personal finance app with budget tracking and analytics.',
-    members: ['Morgan Lee', 'Alex Chen'],
-    technologies: ['React', 'Firebase', 'Chart.js'],
-    link: 'https://github.com',
-  },
-  {
-    id: '6',
-    title: 'Weather Dashboard',
-    description: 'Beautiful weather app with forecasts and alerts.',
-    members: ['Riley Johnson'],
-    technologies: ['Vue.js', 'OpenWeather API', 'CSS'],
-    link: 'https://github.com',
-  },
-];
-
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const dbProjects = await getProjects();
+  const mockProjects: Project[] = dbProjects.map(p => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    members: p.author_name ? [p.author_name] : ['Anonymous'],
+    technologies: p.tech_stack || [],
+    link: p.repo_url || undefined,
+  }));
   return (
     <>
-      <Navigation />
+
       <main style={{ backgroundColor: HackClubBrand.colors.background }}>
         {/* Header */}
         <section

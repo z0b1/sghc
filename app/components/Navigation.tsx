@@ -27,11 +27,8 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center">
-            <img 
-              src={HackClubBrand.logos.iconRounded} 
-              alt="Hack Club" 
-              className="h-10 w-auto rounded-full" 
-            />
+            <img src={HackClubBrand.logos.iconRounded} alt="Hack Club" className="h-10 w-auto rounded-full" />
+            <span className="ml-2 text-white font-bold" style={{ fontFamily: HackClubBrand.fonts.heading }}>Hack Club</span>
           </Link>
 
           {/* Desktop Navigation */}

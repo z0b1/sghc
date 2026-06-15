@@ -1,4 +1,3 @@
-import Navigation from './components/Navigation';
 import Link from 'next/link';
 import { HackClubBrand } from './config/branding';
 import Icon from '@hackclub/icons';
@@ -6,7 +5,7 @@ import Icon from '@hackclub/icons';
 export default function Home() {
   return (
     <>
-      <Navigation />
+
       <main style={{ backgroundColor: HackClubBrand.colors.background }}>
         {/* Hero Section */}
         <section
@@ -146,22 +145,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer
-          style={{
-            backgroundColor: HackClubBrand.colors.text,
-            color: 'white',
-          }}
-          className="py-12 px-4 flex flex-col items-center text-center"
-        >
-          <img src="/flag-standalone.png" alt="Hack Club Flag" className="h-16 mb-6" />
-          <p>© 2026 Hack Club. Made with ❤️ by student hackers.</p>
-          <p className="text-sm mt-2">
-            <a href="https://hackclub.com" className="underline hover:opacity-80">
-              Powered by Hack Club
-            </a>
-          </p>
-        </footer>
+
       </main>
     </>
   );

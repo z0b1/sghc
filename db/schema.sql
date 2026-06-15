@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE TABLE IF NOT EXISTS leaderboard (
     member_id UUID REFERENCES members(id) ON DELETE CASCADE,
     points INTEGER NOT NULL DEFAULT 0,
-    rank INTEGER GENERATED ALWAYS AS (ROW_NUMBER() OVER (ORDER BY points DESC)) STORED,
     PRIMARY KEY (member_id)
 );
 
@@ -60,3 +59,15 @@ CREATE TABLE IF NOT EXISTS leaderboard (
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
 CREATE INDEX IF NOT EXISTS idx_projects_author ON projects(author_id);
 CREATE INDEX IF NOT EXISTS idx_members_name ON members(name);
+
+-- Event Registrations table
+CREATE TABLE IF NOT EXISTS event_registrations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id UUID REFERENCES events(id) ON DELETE CASCADE,
+    team_name TEXT NOT NULL,
+    team_leader TEXT NOT NULL,
+    num_members INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_registrations_event ON event_registrations(event_id);

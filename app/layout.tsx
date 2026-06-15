@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
+
 
 export const metadata: Metadata = {
   title: "Hack Club - Your School's Hacking Community",
@@ -11,7 +14,8 @@ export const metadata: Metadata = {
     images: ["https://assets.hackclub.com/flag-standalone.svg"],
   },
   icons: {
-    icon: '/icon-rounded.png',
+    icon: "https://assets.hackclub.com/icon-rounded.svg",
+    shortcut: "/vercel.svg",
   },
 };
 
@@ -24,9 +28,12 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <head>
         <link rel="stylesheet" href="https://assets.hackclub.com/fonts/Phantom_Sans.css" />
-        <link rel="icon" href="/icon-rounded.png" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <Navigation />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
