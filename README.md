@@ -1,5 +1,5 @@
 # Official website for Hack Club Šabac gymnasium
-![[Link to the site](https://sghc.dino.icu)](https://assets.hackclub.com/flag-standalone.svg)
+[![Link to the site](https://assets.hackclub.com/flag-standalone.svg)](https://sghc.dino.icu)
 ---
 
 ## About
