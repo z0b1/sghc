@@ -34,7 +34,7 @@ Never commit .env.local to github!
 
 ## Deployment
 
-To deploy, you'll need to use Neon DB and Vercel. For the DNS I used the free DNS generously provided by [Hack Club](github.com/hackclub/dns)
+To deploy, you'll need to use Neon DB and Vercel. For the DNS I used the free DNS generously provided by [Hack Club](https://github.com/hackclub/dns)
 ---
 ### Credits
 
