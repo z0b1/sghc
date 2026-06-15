@@ -103,7 +103,7 @@ export default async function EventsPage() {
                           className="text-sm flex items-center gap-2"
                           style={{ color: HackClubBrand.colors.muted }}
                         >
-                          ⏳ {event.duration}
+                          <Icon glyph="history" size={20} /> {event.duration}
                         </div>
                       )}
                       {event.maxMembersPerTeam && (
@@ -111,7 +111,7 @@ export default async function EventsPage() {
                           className="text-sm flex items-center gap-2"
                           style={{ color: HackClubBrand.colors.muted }}
                         >
-                          👥 Max {event.maxMembersPerTeam} per team
+                          <Icon glyph="group" size={20} /> Max {event.maxMembersPerTeam} per team
                         </div>
                       )}
                     </div>

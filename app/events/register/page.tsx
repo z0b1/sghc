@@ -1,14 +1,9 @@
 "use client";
 
 import { HackClubBrand } from "../../config/branding";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-
-const availableEvents = [
-  "Spring Hackathon",
-  "Intro to Python Workshop",
-  "Game Dev Jam",
-];
+import { getEvents } from "../../lib/actions";
 
 export default function EventRegisterPage() {
   const [form, setForm] = useState({
@@ -17,7 +12,17 @@ export default function EventRegisterPage() {
     numMembers: "",
     eventName: "",
   });
+  const [availableEvents, setAvailableEvents] = useState<any[]>([]);
   const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    getEvents()
+      .then((events) => setAvailableEvents(events))
+      .catch((err) => console.error("Failed to load events", err));
+  }, []);
+
+  const selectedEvent = availableEvents.find(e => e.title === form.eventName);
+  const maxMembers = selectedEvent?.max_members_per_team || 10;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -93,8 +98,8 @@ export default function EventRegisterPage() {
                 Select Event
               </option>
               {availableEvents.map((ev) => (
-                <option key={ev} value={ev}>
-                  {ev}
+                <option key={ev.id} value={ev.title}>
+                  {ev.title}
                 </option>
               ))}
             </select>
@@ -134,7 +139,7 @@ export default function EventRegisterPage() {
               name="numMembers"
               placeholder="Number of Team Members"
               min="1"
-              max="10"
+              max={maxMembers}
               value={form.numMembers}
               onChange={handleChange}
               required

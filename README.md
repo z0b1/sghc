@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Official website for Hack Club Šabac gymnasium
+![[Link to the site](https://sghc.dino.icu)](https://assets.hackclub.com/flag-standalone.svg)
+---
 
-## Getting Started
+## About
 
-First, run the development server:
+ŠGHC is a chapter of [Hack Club](https://hackclub.com/), a registered 501(c)(3) nonprofit organization based in the US. We are located in Šabac, Serbia. We are a community of students who are passionate about computer science, technology, and entrepreneurship.
+---
+
+## Tech stack
+- Next.js
+- Neon DB
+- TypeScript
+- @hackclub/icons
+- Hack Club brand assets
+
+## Getting started
+
+To run locally you'll need to provide environment variables in .env.local file.
+
+For now 
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Important notes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Password and secret key are in the .env.local.example file
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Never commit .env.local to github!
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To deploy, you'll need to use Neon DB and Vercel. For the DNS I used the free DNS generously provided by [Hack Club](github.com/hackclub/dns)
+---
+### Credits
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Made by students for students with <3 by [Hack Club Šabac gymnasium](https://sghc.dino.icu)
 
-## Deploy on Vercel
+### Devs
+[Božidar Mišković](https://github.com/z0b1) | President of ŠGHC
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Apache 2.0
