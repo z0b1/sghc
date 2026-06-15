@@ -23,7 +23,7 @@ export default function QuestionnairePage() {
       });
       if (res.ok) {
         setStatus("✅ Sent! Thank you.");
-        setForm({ name: "", email: "", interests: "" });
+        setForm({ name: "", email: "", studentClass: "", studentYear: "", interests: "" });
       } else {
         const err = await res.text();
         setStatus(`❌ Error: ${err}`);
