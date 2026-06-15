@@ -24,6 +24,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <head>
         <link rel="stylesheet" href="https://assets.hackclub.com/fonts/Phantom_Sans.css" />
+        <link rel="icon" href="/icon-rounded.png" />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
