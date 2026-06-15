@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { HackClubBrand } from '../../config/branding';
-import { getMembers, addMember, removeMember } from '../../lib/actions';
+import { getMembers, addMember, removeMember, getEvents, addEvent, removeEvent } from '../../lib/actions';
 
 type TabType = 'events' | 'members' | 'projects' | 'leaderboard';
 
@@ -16,6 +16,20 @@ interface Member {
   grade?: string;
 }
 
+interface EventData {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  duration?: string;
+  max_members_per_team?: number;
+  detailed_description?: string;
+  registration_limit?: number;
+  registered_count?: number;
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
   const [loading, setLoading] = useState(true);
@@ -24,6 +38,10 @@ export default function AdminDashboard() {
   const [members, setMembers] = useState<Member[]>([]);
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMember, setNewMember] = useState<Partial<Member>>({});
+
+  const [eventsDataList, setEventsDataList] = useState<EventData[]>([]);
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [newEvent, setNewEvent] = useState<Partial<EventData>>({});
 
   const router = useRouter();
 
@@ -37,8 +55,15 @@ export default function AdminDashboard() {
     setAuthorized(true);
 
     // Fetch live data
-    getMembers().then(data => {
-      setMembers(data as Member[]);
+    Promise.all([getMembers(), getEvents()]).then(([membersData, eventsRes]) => {
+      setMembers(membersData as Member[]);
+      
+      // format dates nicely since SQL might return Date objects
+      const formattedEvents = (eventsRes as any[]).map(e => ({
+        ...e,
+        date: typeof e.date === 'string' ? e.date : e.date.toISOString().split('T')[0]
+      }));
+      setEventsDataList(formattedEvents as EventData[]);
       setLoading(false);
     }).catch(err => {
       console.error(err);
@@ -66,6 +91,37 @@ export default function AdminDashboard() {
   const handleRemoveMember = async (id: string) => {
     await removeMember(id);
     setMembers(members.filter(m => m.id !== id));
+  };
+
+  const handleAddEvent = async () => {
+    if (!newEvent.title || !newEvent.date || !newEvent.time || !newEvent.location) return;
+    
+    await addEvent({
+      title: newEvent.title,
+      description: newEvent.description || '',
+      date: newEvent.date,
+      time: newEvent.time,
+      location: newEvent.location,
+      duration: newEvent.duration,
+      max_members_per_team: newEvent.max_members_per_team ? parseInt(newEvent.max_members_per_team as any) : undefined,
+      registration_limit: newEvent.registration_limit ? parseInt(newEvent.registration_limit as any) : undefined,
+      detailed_description: newEvent.detailed_description,
+    });
+    
+    // Refresh events list
+    const updated = await getEvents();
+    const formattedEvents = (updated as any[]).map(e => ({
+      ...e,
+      date: typeof e.date === 'string' ? e.date : e.date.toISOString().split('T')[0]
+    }));
+    setEventsDataList(formattedEvents as EventData[]);
+    setNewEvent({});
+    setShowAddEvent(false);
+  };
+
+  const handleRemoveEvent = async (id: string) => {
+    await removeEvent(id);
+    setEventsDataList(eventsDataList.filter(e => e.id !== id));
   };
 
   const handleLogout = () => {
@@ -130,25 +186,73 @@ export default function AdminDashboard() {
           {/* Content Areas */}
           {activeTab === 'events' && (
             <div>
-              <h2 className="text-2xl font-bold mb-4" style={{ color: HackClubBrand.colors.text }}>
-                Manage Events
-              </h2>
-              <div
-                className="p-6 rounded-lg"
-                style={{
-                  backgroundColor: HackClubBrand.colors.elevated,
-                  boxShadow: HackClubBrand.shadows.card,
-                }}
-              >
-                <p style={{ color: HackClubBrand.colors.muted }} className="mb-4">
-                  Coming soon: Create, edit, and delete events
-                </p>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold" style={{ color: HackClubBrand.colors.text }}>
+                  Manage Events
+                </h2>
                 <button
-                  className="px-4 py-2 rounded-full font-bold text-white"
+                  onClick={() => setShowAddEvent(!showAddEvent)}
+                  className="px-4 py-2 rounded-full font-bold text-white transition hover:opacity-80"
                   style={{ backgroundColor: HackClubBrand.colors.red }}
                 >
-                  + New Event
+                  {showAddEvent ? 'Cancel' : '+ New Event'}
                 </button>
+              </div>
+
+              {showAddEvent && (
+                <div className="mb-6 p-6 rounded-lg border" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated }}>
+                  <h3 className="text-xl font-bold mb-4" style={{ color: HackClubBrand.colors.text }}>Add New Event</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <input type="text" placeholder="Title" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.title || ''} onChange={e => setNewEvent({ ...newEvent, title: e.target.value })} />
+                      <input type="text" placeholder="Short Description" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.description || ''} onChange={e => setNewEvent({ ...newEvent, description: e.target.value })} />
+                      <input type="date" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.date || ''} onChange={e => setNewEvent({ ...newEvent, date: e.target.value })} />
+                      <input type="time" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.time || ''} onChange={e => setNewEvent({ ...newEvent, time: e.target.value })} />
+                      <input type="text" placeholder="Location" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.location || ''} onChange={e => setNewEvent({ ...newEvent, location: e.target.value })} />
+                      <input type="text" placeholder="Duration (e.g. 2 hours)" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.duration || ''} onChange={e => setNewEvent({ ...newEvent, duration: e.target.value })} />
+                      <input type="number" placeholder="Max Participants" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.registration_limit || ''} onChange={e => setNewEvent({ ...newEvent, registration_limit: parseInt(e.target.value) })} />
+                      <input type="number" placeholder="Max Members per Team" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.max_members_per_team || ''} onChange={e => setNewEvent({ ...newEvent, max_members_per_team: parseInt(e.target.value) })} />
+                      <textarea placeholder="Detailed Description" rows={4} className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newEvent.detailed_description || ''} onChange={e => setNewEvent({ ...newEvent, detailed_description: e.target.value })} />
+                  </div>
+                  <button
+                    onClick={handleAddEvent}
+                    className="px-4 py-2 rounded font-bold text-white transition hover:opacity-80"
+                    style={{ backgroundColor: HackClubBrand.colors.green }}
+                  >
+                    Save Event
+                  </button>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {eventsDataList.map(event => (
+                  <div
+                    key={event.id}
+                    className="flex justify-between items-center p-4 rounded-lg"
+                    style={{
+                      backgroundColor: HackClubBrand.colors.elevated,
+                      boxShadow: HackClubBrand.shadows.small
+                    }}
+                  >
+                    <div>
+                      <h4 className="font-bold text-lg" style={{ color: HackClubBrand.colors.text }}>
+                        {event.title}
+                      </h4>
+                      <p className="text-sm mt-1" style={{ color: HackClubBrand.colors.muted }}>
+                        {event.date} at {event.time} • {event.location}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveEvent(event.id)}
+                      className="px-3 py-1 rounded text-white font-semibold text-sm transition hover:opacity-80"
+                      style={{ backgroundColor: HackClubBrand.colors.red }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {eventsDataList.length === 0 && (
+                  <p style={{ color: HackClubBrand.colors.muted }}>No events found.</p>
+                )}
               </div>
             </div>
           )}

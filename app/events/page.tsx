@@ -11,6 +11,9 @@ interface Event {
   time: string;
   location: string;
   description: string;
+  duration?: string;
+  maxMembersPerTeam?: number;
+  detailedDescription?: string;
   registrationLimit: number;
   registered: number;
 }
@@ -23,6 +26,9 @@ export default async function EventsPage() {
     date: new Date(e.date).toLocaleDateString(),
     time: e.time,
     description: e.description,
+    duration: e.duration,
+    maxMembersPerTeam: e.max_members_per_team,
+    detailedDescription: e.detailed_description,
     location: e.location,
     registrationLimit: e.registration_limit,
     registered: e.registered_count
@@ -92,6 +98,22 @@ export default async function EventsPage() {
                       >
                         <Icon glyph="pin" size={20} /> {event.location}
                       </div>
+                      {event.duration && (
+                        <div
+                          className="text-sm flex items-center gap-2"
+                          style={{ color: HackClubBrand.colors.muted }}
+                        >
+                          ⏳ {event.duration}
+                        </div>
+                      )}
+                      {event.maxMembersPerTeam && (
+                        <div
+                          className="text-sm flex items-center gap-2"
+                          style={{ color: HackClubBrand.colors.muted }}
+                        >
+                          👥 Max {event.maxMembersPerTeam} per team
+                        </div>
+                      )}
                     </div>
 
                     <p
@@ -100,6 +122,15 @@ export default async function EventsPage() {
                     >
                       {event.description}
                     </p>
+
+                    {event.detailedDescription && (
+                      <details className="mb-4 text-sm" style={{ color: HackClubBrand.colors.text }}>
+                        <summary className="cursor-pointer font-semibold mb-2" style={{ color: HackClubBrand.colors.blue }}>More Details</summary>
+                        <div className="p-3 rounded whitespace-pre-wrap" style={{ backgroundColor: HackClubBrand.colors.sunken }}>
+                          {event.detailedDescription}
+                        </div>
+                      </details>
+                    )}
 
                     {/* Registration Bar */}
                     <div className="mb-4">

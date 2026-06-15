@@ -28,10 +28,10 @@ export async function getEvents() {
   return result;
 }
 
-export async function addEvent(event: { title: string; description: string; date: string; time: string; location: string }) {
+export async function addEvent(event: { title: string; description: string; date: string; time: string; location: string; duration?: string; max_members_per_team?: number; detailed_description?: string; registration_limit?: number }) {
   await sql`
-    INSERT INTO events (title, description, date, time, location)
-    VALUES (${event.title}, ${event.description}, ${event.date}, ${event.time}, ${event.location})
+    INSERT INTO events (title, description, date, time, location, duration, max_members_per_team, detailed_description, registration_limit)
+    VALUES (${event.title}, ${event.description}, ${event.date}, ${event.time}, ${event.location}, ${event.duration || null}, ${event.max_members_per_team || null}, ${event.detailed_description || null}, ${event.registration_limit || null})
   `;
   revalidatePath('/events');
 }
