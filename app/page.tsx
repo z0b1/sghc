@@ -44,6 +44,15 @@ export default function Home() {
               >
                 Meet Members
               </Link>
+              <a
+                href="https://hack.club/join/UXXJKL"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3 rounded-full text-lg font-bold transition transform hover:scale-105"
+                style={{ backgroundColor: HackClubBrand.colors.green, color: 'white' }}
+              >
+                Sign Up
+              </a>
             </div>
           </div>
         </section>

@@ -62,11 +62,10 @@ export default async function ProjectsPage() {
                       className="w-full h-48 object-cover rounded-md mb-4"
                     />
                   )}
-                  <h3
-                    className="text-2xl font-bold mb-2"
-                    style={{ color: HackClubBrand.colors.text }}
-                  >
-                    {project.title}
+                  <h3 className="text-2xl font-bold mb-2" style={{ color: HackClubBrand.colors.text }}>
+                    <a href={project.live_demo_url || project.link} target="_blank" rel="noopener noreferrer" className="text-2xl font-bold mb-2" style={{ color: HackClubBrand.colors.text }}>
+                      {project.title}
+                    </a>
                   </h3>
 
                   <p
@@ -114,17 +113,6 @@ export default async function ProjectsPage() {
                   </div>
 
                   <div className="flex gap-2 flex-wrap">
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block px-4 py-2 rounded-full font-bold text-white transition"
-                        style={{ backgroundColor: HackClubBrand.colors.green }}
-                      >
-                        GitHub Repo
-                      </a>
-                    )}
                     {project.live_demo_url && (
                       <a
                         href={project.live_demo_url}
@@ -134,6 +122,17 @@ export default async function ProjectsPage() {
                         style={{ backgroundColor: HackClubBrand.colors.blue }}
                       >
                         Live Demo
+                      </a>
+                    )}
+                    {project.link && (!project.live_demo_url) && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 rounded-full font-bold text-white transition"
+                        style={{ backgroundColor: HackClubBrand.colors.green }}
+                      >
+                        GitHub Repo
                       </a>
                     )}
                   </div>

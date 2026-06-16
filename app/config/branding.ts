@@ -34,7 +34,7 @@ export const HackClubBrand = {
 
   // Fonts
   fonts: {
-    heading: '"Phantom Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    heading: 'var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     mono: '"SF Mono", "Roboto Mono", Menlo, Consolas, monospace',
   },

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 
-
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "Hack Club - Your School's Hacking Community",
   description: "Join your school's Hack Club to learn coding, build projects, and compete in hackathons.",
@@ -25,9 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`h-full antialiased ${inter.variable}`}>
       <head>
-        <link rel="stylesheet" href="https://assets.hackclub.com/fonts/Phantom_Sans.css" />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <Navigation />
