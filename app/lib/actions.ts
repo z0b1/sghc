@@ -64,10 +64,7 @@ export async function removeProject(id: string) {
   revalidatePath('/projects');
 }
 
-export async function removeProject(id: string) {
-  await sql`DELETE FROM projects WHERE id = ${id}`;
-  revalidatePath('/projects');
-}
+
 
 // -- LEADERBOARD --
 export async function getLeaderboard() {
