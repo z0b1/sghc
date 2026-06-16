@@ -44,9 +44,10 @@ CREATE TABLE IF NOT EXISTS projects (
     title TEXT NOT NULL,
     description TEXT,
     tech_stack TEXT[],
-    author_id UUID REFERENCES members(id) ON DELETE SET NULL,
+    devs TEXT,
     repo_url TEXT,
     live_demo_url TEXT,
+    image_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

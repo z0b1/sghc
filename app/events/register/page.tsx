@@ -9,6 +9,8 @@ export default function EventRegisterPage() {
   const [form, setForm] = useState({
     teamName: "",
     teamLeader: "",
+    email: "",
+    phone: "",
     numMembers: "",
     eventName: "",
   });
@@ -46,6 +48,8 @@ export default function EventRegisterPage() {
         setForm({
           teamName: "",
           teamLeader: "",
+          email: "",
+          phone: "",
           numMembers: "",
           eventName: "",
         });
@@ -124,6 +128,36 @@ export default function EventRegisterPage() {
               name="teamLeader"
               placeholder="Team Leader Name"
               value={form.teamLeader}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border rounded"
+              style={{
+                backgroundColor: HackClubBrand.colors.elevated,
+                borderColor: HackClubBrand.colors.muted,
+                color: HackClubBrand.colors.text,
+              }}
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Contact Email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border rounded"
+              style={{
+                backgroundColor: HackClubBrand.colors.elevated,
+                borderColor: HackClubBrand.colors.muted,
+                color: HackClubBrand.colors.text,
+              }}
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Contact Phone Number"
+              value={form.phone}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded"

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { HackClubBrand } from '../../config/branding';
-import { getMembers, addMember, removeMember, getEvents, addEvent, removeEvent } from '../../lib/actions';
+import { getMembers, addMember, removeMember, getEvents, addEvent, removeEvent, getProjects, addProject, removeProject } from '../../lib/actions';
 
 type TabType = 'events' | 'members' | 'projects' | 'leaderboard';
 
@@ -30,6 +30,17 @@ interface EventData {
   registered_count?: number;
 }
 
+interface ProjectData {
+  id: string;
+  title: string;
+  description: string;
+  devs: string;
+  tech_stack: string[];
+  repo_url?: string;
+  live_demo_url?: string;
+  image_url?: string;
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
   const [loading, setLoading] = useState(true);
@@ -43,6 +54,11 @@ export default function AdminDashboard() {
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [newEvent, setNewEvent] = useState<Partial<EventData>>({});
 
+  const [projectsDataList, setProjectsDataList] = useState<ProjectData[]>([]);
+  const [showAddProject, setShowAddProject] = useState(false);
+  const [newProject, setNewProject] = useState<Partial<ProjectData>>({ tech_stack: [] });
+  const [techStackInput, setTechStackInput] = useState('');
+
   const router = useRouter();
 
   useEffect(() => {
@@ -55,7 +71,7 @@ export default function AdminDashboard() {
     setAuthorized(true);
 
     // Fetch live data
-    Promise.all([getMembers(), getEvents()]).then(([membersData, eventsRes]) => {
+    Promise.all([getMembers(), getEvents(), getProjects()]).then(([membersData, eventsRes, projectsRes]) => {
       setMembers(membersData as Member[]);
       
       // format dates nicely since SQL might return Date objects
@@ -64,6 +80,7 @@ export default function AdminDashboard() {
         date: typeof e.date === 'string' ? e.date : e.date.toISOString().split('T')[0]
       }));
       setEventsDataList(formattedEvents as EventData[]);
+      setProjectsDataList(projectsRes as ProjectData[]);
       setLoading(false);
     }).catch(err => {
       console.error(err);
@@ -122,6 +139,31 @@ export default function AdminDashboard() {
   const handleRemoveEvent = async (id: string) => {
     await removeEvent(id);
     setEventsDataList(eventsDataList.filter(e => e.id !== id));
+  };
+
+  const handleAddProject = async () => {
+    if (!newProject.title || !newProject.description) return;
+    
+    await addProject({
+      title: newProject.title,
+      description: newProject.description,
+      tech_stack: techStackInput.split(',').map(t => t.trim()).filter(Boolean),
+      repo_url: newProject.repo_url,
+      live_demo_url: newProject.live_demo_url,
+      devs: newProject.devs,
+      image_url: newProject.image_url,
+    });
+    
+    const updated = await getProjects();
+    setProjectsDataList(updated as ProjectData[]);
+    setNewProject({ tech_stack: [] });
+    setTechStackInput('');
+    setShowAddProject(false);
+  };
+
+  const handleRemoveProject = async (id: string) => {
+    await removeProject(id);
+    setProjectsDataList(projectsDataList.filter(p => p.id !== id));
   };
 
   const handleLogout = () => {
@@ -377,25 +419,71 @@ export default function AdminDashboard() {
 
           {activeTab === 'projects' && (
             <div>
-              <h2 className="text-2xl font-bold mb-4" style={{ color: HackClubBrand.colors.text }}>
-                Manage Projects
-              </h2>
-              <div
-                className="p-6 rounded-lg"
-                style={{
-                  backgroundColor: HackClubBrand.colors.elevated,
-                  boxShadow: HackClubBrand.shadows.card,
-                }}
-              >
-                <p style={{ color: HackClubBrand.colors.muted }} className="mb-4">
-                  Coming soon: Add and showcase member projects
-                </p>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold" style={{ color: HackClubBrand.colors.text }}>
+                  Manage Projects
+                </h2>
                 <button
-                  className="px-4 py-2 rounded-full font-bold text-white"
+                  onClick={() => setShowAddProject(!showAddProject)}
+                  className="px-4 py-2 rounded-full font-bold text-white transition hover:opacity-80"
                   style={{ backgroundColor: HackClubBrand.colors.green }}
                 >
-                  + Add Project
+                  {showAddProject ? 'Cancel' : '+ Add Project'}
                 </button>
+              </div>
+
+              {showAddProject && (
+                <div className="mb-6 p-6 rounded-lg border" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated }}>
+                  <h3 className="text-xl font-bold mb-4" style={{ color: HackClubBrand.colors.text }}>Add New Project</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <input type="text" placeholder="Title" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.title || ''} onChange={e => setNewProject({ ...newProject, title: e.target.value })} />
+                      <input type="text" placeholder="Devs (e.g. Alice, Bob)" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.devs || ''} onChange={e => setNewProject({ ...newProject, devs: e.target.value })} />
+                      <input type="text" placeholder="GitHub Repo Link" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.repo_url || ''} onChange={e => setNewProject({ ...newProject, repo_url: e.target.value })} />
+                      <input type="text" placeholder="Live Demo Link (optional)" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.live_demo_url || ''} onChange={e => setNewProject({ ...newProject, live_demo_url: e.target.value })} />
+                      <input type="text" placeholder="Image Link" className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.image_url || ''} onChange={e => setNewProject({ ...newProject, image_url: e.target.value })} />
+                      <input type="text" placeholder="Tech Stack (comma-separated, e.g. React, Node)" className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={techStackInput} onChange={e => setTechStackInput(e.target.value)} />
+                      <textarea placeholder="Description" rows={4} className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.description || ''} onChange={e => setNewProject({ ...newProject, description: e.target.value })} />
+                  </div>
+                  <button
+                    onClick={handleAddProject}
+                    className="px-4 py-2 rounded font-bold text-white transition hover:opacity-80"
+                    style={{ backgroundColor: HackClubBrand.colors.green }}
+                  >
+                    Save Project
+                  </button>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {projectsDataList.map(project => (
+                  <div
+                    key={project.id}
+                    className="flex justify-between items-center p-4 rounded-lg"
+                    style={{
+                      backgroundColor: HackClubBrand.colors.elevated,
+                      boxShadow: HackClubBrand.shadows.small
+                    }}
+                  >
+                    <div>
+                      <h4 className="font-bold text-lg" style={{ color: HackClubBrand.colors.text }}>
+                        {project.title}
+                      </h4>
+                      <p className="text-sm mt-1" style={{ color: HackClubBrand.colors.muted }}>
+                        By {project.devs || 'Unknown'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveProject(project.id)}
+                      className="px-3 py-1 rounded text-white font-semibold text-sm transition hover:opacity-80"
+                      style={{ backgroundColor: HackClubBrand.colors.red }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {projectsDataList.length === 0 && (
+                  <p style={{ color: HackClubBrand.colors.muted }}>No projects found.</p>
+                )}
               </div>
             </div>
           )}

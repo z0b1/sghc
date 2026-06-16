@@ -6,9 +6,11 @@ interface Project {
   id: string;
   title: string;
   description: string;
-  members: string[];
+  devs: string;
   technologies: string[];
   link?: string;
+  live_demo_url?: string;
+  image_url?: string;
 }
 
 export default async function ProjectsPage() {
@@ -17,9 +19,11 @@ export default async function ProjectsPage() {
     id: p.id,
     title: p.title,
     description: p.description,
-    members: p.author_name ? [p.author_name] : ['Anonymous'],
+    devs: p.devs || 'Unknown',
     technologies: p.tech_stack || [],
     link: p.repo_url || undefined,
+    live_demo_url: p.live_demo_url || undefined,
+    image_url: p.image_url || undefined,
   }));
   return (
     <>
@@ -51,6 +55,13 @@ export default async function ProjectsPage() {
                     boxShadow: HackClubBrand.shadows.card,
                   }}
                 >
+                  {project.image_url && (
+                    <img 
+                      src={project.image_url} 
+                      alt={project.title} 
+                      className="w-full h-48 object-cover rounded-md mb-4"
+                    />
+                  )}
                   <h3
                     className="text-2xl font-bold mb-2"
                     style={{ color: HackClubBrand.colors.text }}
@@ -98,21 +109,34 @@ export default async function ProjectsPage() {
                       className="text-sm"
                       style={{ color: HackClubBrand.colors.text }}
                     >
-                      {project.members.join(', ')}
+                      {project.devs}
                     </p>
                   </div>
 
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 rounded-full font-bold text-white transition"
-                      style={{ backgroundColor: HackClubBrand.colors.green }}
-                    >
-                      View Project
-                    </a>
-                  )}
+                  <div className="flex gap-2 flex-wrap">
+                    {project.link && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 rounded-full font-bold text-white transition"
+                        style={{ backgroundColor: HackClubBrand.colors.green }}
+                      >
+                        GitHub Repo
+                      </a>
+                    )}
+                    {project.live_demo_url && (
+                      <a
+                        href={project.live_demo_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 rounded-full font-bold text-white transition"
+                        style={{ backgroundColor: HackClubBrand.colors.blue }}
+                      >
+                        Live Demo
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

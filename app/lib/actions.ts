@@ -44,19 +44,23 @@ export async function removeEvent(id: string) {
 // -- PROJECTS --
 export async function getProjects() {
   const result = await sql`
-    SELECT p.*, m.name as author_name 
-    FROM projects p 
-    LEFT JOIN members m ON p.author_id = m.id 
-    ORDER BY p.created_at DESC
+    SELECT * 
+    FROM projects 
+    ORDER BY created_at DESC
   `;
   return result;
 }
 
-export async function addProject(project: { title: string; description: string; tech_stack: string[]; repo_url?: string }) {
+export async function addProject(project: { title: string; description: string; tech_stack: string[]; repo_url?: string; live_demo_url?: string; devs?: string; image_url?: string }) {
   await sql`
-    INSERT INTO projects (title, description, tech_stack, repo_url)
-    VALUES (${project.title}, ${project.description}, ${project.tech_stack}, ${project.repo_url || null})
+    INSERT INTO projects (title, description, tech_stack, repo_url, live_demo_url, devs, image_url)
+    VALUES (${project.title}, ${project.description}, ${project.tech_stack}, ${project.repo_url || null}, ${project.live_demo_url || null}, ${project.devs || null}, ${project.image_url || null})
   `;
+  revalidatePath('/projects');
+}
+
+export async function removeProject(id: string) {
+  await sql`DELETE FROM projects WHERE id = ${id}`;
   revalidatePath('/projects');
 }
 

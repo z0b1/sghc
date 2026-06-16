@@ -3,10 +3,10 @@ import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { teamName, teamLeader, numMembers, eventName } = await req.json();
+    const { teamName, teamLeader, numMembers, eventName, email, phone } = await req.json();
 
     // Validate required fields
-    if (!teamName || !teamLeader || !numMembers || !eventName) {
+    if (!teamName || !teamLeader || !numMembers || !eventName || !email || !phone) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), { 
         status: 400, 
         headers: { "Content-Type": "application/json" } 
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       from: `"${teamLeader}" <${process.env.SMTP_USER}>`, // sender info
       to: recipient,
       subject: `New Event Registration: ${teamName} for ${eventName}`,
-      text: `Team Name: ${teamName}\nTeam Leader: ${teamLeader}\nNumber of Members: ${numMembers}\nEvent: ${eventName}`,
+      text: `Team Name: ${teamName}\nTeam Leader: ${teamLeader}\nEmail: ${email}\nPhone: ${phone}\nNumber of Members: ${numMembers}\nEvent: ${eventName}`,
     };
 
     await transporter.sendMail(mailOptions);
