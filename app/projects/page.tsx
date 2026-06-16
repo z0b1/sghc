@@ -1,6 +1,7 @@
 
 import { HackClubBrand } from '../config/branding';
 import { getProjects } from '../lib/actions';
+import Image from 'next/image';
 
 interface Project {
   id: string;
@@ -56,10 +57,13 @@ export default async function ProjectsPage() {
                   }}
                 >
                   {project.image_url && (
-                    <img 
-                      src={project.image_url} 
-                      alt={project.title} 
-                      className="w-full h-48 object-cover rounded-md mb-4"
+                    <Image
+                      src={project.image_url}
+                      alt={project.title}
+                      width={400}
+                      height={300}
+                      className="w-full rounded-md mb-4"
+                      style={{ objectFit: 'contain' }}
                     />
                   )}
                   <h3 className="text-2xl font-bold mb-2" style={{ color: HackClubBrand.colors.text }}>
