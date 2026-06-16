@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { HackClubBrand } from '../../config/branding';
-import { getMembers, addMember, removeMember, getEvents, addEvent, removeEvent, getProjects, addProject, removeProject } from '../../lib/actions';
+import { getMembers, addMember, removeMember, getEvents, addEvent, removeEvent, getProjects, addProject, removeProject, uploadImageToCDN } from '../../lib/actions';
 
 type TabType = 'events' | 'members' | 'projects' | 'leaderboard';
 
@@ -58,6 +58,8 @@ export default function AdminDashboard() {
   const [showAddProject, setShowAddProject] = useState(false);
   const [newProject, setNewProject] = useState<Partial<ProjectData>>({ tech_stack: [] });
   const [techStackInput, setTechStackInput] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const router = useRouter();
 
@@ -144,21 +146,47 @@ export default function AdminDashboard() {
   const handleAddProject = async () => {
     if (!newProject.title || !newProject.description) return;
     
-    await addProject({
-      title: newProject.title,
-      description: newProject.description,
-      tech_stack: techStackInput.split(',').map(t => t.trim()).filter(Boolean),
-      repo_url: newProject.repo_url,
-      live_demo_url: newProject.live_demo_url,
-      devs: newProject.devs,
-      image_url: newProject.image_url,
-    });
-    
-    const updated = await getProjects();
-    setProjectsDataList(updated as ProjectData[]);
-    setNewProject({ tech_stack: [] });
-    setTechStackInput('');
-    setShowAddProject(false);
+    setIsUploading(true);
+    let uploadedUrl = newProject.image_url;
+
+    try {
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        const data = await uploadImageToCDN(formData);
+        
+        // Handle standard array of URLs or a single URL object
+        if (Array.isArray(data) && data.length > 0) {
+          uploadedUrl = data[0].url || data[0]; // depends on exact response
+        } else if (data && data.url) {
+          uploadedUrl = data.url;
+        } else if (typeof data === 'string') {
+          uploadedUrl = data;
+        }
+      }
+
+      await addProject({
+        title: newProject.title,
+        description: newProject.description,
+        tech_stack: techStackInput.split(',').map(t => t.trim()).filter(Boolean),
+        repo_url: newProject.repo_url,
+        live_demo_url: newProject.live_demo_url,
+        devs: newProject.devs,
+        image_url: uploadedUrl,
+      });
+      
+      const updated = await getProjects();
+      setProjectsDataList(updated as ProjectData[]);
+      setNewProject({ tech_stack: [] });
+      setTechStackInput('');
+      setImageFile(null);
+      setShowAddProject(false);
+    } catch (err) {
+      console.error("Failed to add project:", err);
+      alert("Failed to upload image or save project. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleRemoveProject = async (id: string) => {
@@ -440,16 +468,20 @@ export default function AdminDashboard() {
                       <input type="text" placeholder="Devs (e.g. Alice, Bob)" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.devs || ''} onChange={e => setNewProject({ ...newProject, devs: e.target.value })} />
                       <input type="text" placeholder="GitHub Repo Link" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.repo_url || ''} onChange={e => setNewProject({ ...newProject, repo_url: e.target.value })} />
                       <input type="text" placeholder="Live Demo Link (optional)" className="p-2 border rounded" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.live_demo_url || ''} onChange={e => setNewProject({ ...newProject, live_demo_url: e.target.value })} />
-                      <input type="text" placeholder="Image Link" className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.image_url || ''} onChange={e => setNewProject({ ...newProject, image_url: e.target.value })} />
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold mb-1" style={{ color: HackClubBrand.colors.text }}>Project Image (Uploads to CDN)</label>
+                        <input type="file" accept="image/*" className="p-2 border rounded w-full" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} onChange={e => e.target.files && setImageFile(e.target.files[0])} />
+                      </div>
                       <input type="text" placeholder="Tech Stack (comma-separated, e.g. React, Node)" className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={techStackInput} onChange={e => setTechStackInput(e.target.value)} />
                       <textarea placeholder="Description" rows={4} className="p-2 border rounded md:col-span-2" style={{ borderColor: HackClubBrand.colors.border, backgroundColor: HackClubBrand.colors.elevated, color: HackClubBrand.colors.text }} value={newProject.description || ''} onChange={e => setNewProject({ ...newProject, description: e.target.value })} />
                   </div>
                   <button
                     onClick={handleAddProject}
-                    className="px-4 py-2 rounded font-bold text-white transition hover:opacity-80"
+                    disabled={isUploading}
+                    className="px-4 py-2 rounded font-bold text-white transition hover:opacity-80 disabled:opacity-50"
                     style={{ backgroundColor: HackClubBrand.colors.green }}
                   >
-                    Save Project
+                    {isUploading ? 'Uploading & Saving...' : 'Save Project'}
                   </button>
                 </div>
               )}

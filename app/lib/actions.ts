@@ -76,3 +76,29 @@ export async function getLeaderboard() {
   `;
   return result;
 }
+
+// -- CDN UPLOAD --
+export async function uploadImageToCDN(formData: FormData) {
+  const apiKey = process.env.HACK_CLUB_CDN_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing HACK_CLUB_CDN_API_KEY in environment variables");
+  }
+
+  const response = await fetch("https://cdn.hackclub.com/api/v4/upload", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Upload failed: ${response.status} ${errorText}`);
+  }
+
+  // The CDN returns the URL of the uploaded image
+  // It usually returns a JSON object or array of URLs.
+  const data = await response.json();
+  return data;
+}
